@@ -20,15 +20,15 @@ namespace SZ {
 
             virtual ~FrontendInterface() = default;
 
-            virtual std::vector<int> compress(T *data, size_t x, size_t y, size_t z) = 0;
+            virtual std::vector<int> compress(T *data, size_t x, size_t y, size_t z, size_t szBlk) = 0;
             // virtual std::vector<int> compress(T *data) = 0;
 
             // virtual T *decompress(std::vector<int> &quant_inds, T *dec_data, size_t x, size_t y, size_t z) = 0;
             virtual T *decompress(std::vector<int> &quant_inds, T *dec_data) = 0;
 
-            virtual int *save(uchar *&c, size_t &regCnt) = 0;
+            virtual int *save(uchar *&c, size_t &regCnt, size_t szBlk) = 0;
 
-            virtual void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z) = 0;
+            virtual void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z, size_t &regCnt, std::vector<int> &quant_inds, bool real) = 0;
             // virtual void load(const uchar *&c, size_t &remaining_length) = 0;
 
             virtual size_t size_est() = 0;
@@ -40,6 +40,8 @@ namespace SZ {
             virtual size_t get_blkNum() const = 0;
 
             virtual size_t *get_meta() = 0;
+
+            virtual size_t get_ifTree() = 0;
 
             virtual size_t get_num_elements() const = 0;
 

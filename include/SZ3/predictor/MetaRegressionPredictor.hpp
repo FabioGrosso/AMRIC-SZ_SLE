@@ -53,38 +53,45 @@ namespace SZMETA {
     template<typename T>
     float *
     decode_regression_coefficients(const unsigned char *&compressed_pos, size_t reg_count, int block_size, T precision,
-                                   const meta_params &params) {
+                                   const meta_params &params, std::vector<int> &reg_vector, bool real) {
         size_t reg_unpredictable_count = 0;
         size_t remaining_length = RegCoeffNum3d * reg_count;//fake, has no meaning
         SZ::read(reg_unpredictable_count, compressed_pos, remaining_length);
         const float *reg_unpredictable_data_pos = (const float *) compressed_pos;
         compressed_pos += reg_unpredictable_count * sizeof(float);
-
 //        int *reg_type = Huffman_decode_tree_and_data(2 * RegCoeffCapacity, RegCoeffNum3d * reg_count, compressed_pos);
-        SZ::HuffmanEncoder<int> selector_encoder = SZ::HuffmanEncoder<int>();
-        selector_encoder.load(compressed_pos, remaining_length);
-        auto reg_vector = selector_encoder.decode(compressed_pos, RegCoeffNum3d * reg_count);
-        selector_encoder.postprocess_decode();
-        int *reg_type = reg_vector.data();
 
+        // SZ::HuffmanEncoder<int> selector_encoder = SZ::HuffmanEncoder<int>();
+        // selector_encoder.load(compressed_pos, remaining_length);
+        // auto reg_vector = selector_encoder.decode(compressed_pos, RegCoeffNum3d * reg_count);
+        // selector_encoder.postprocess_decode();
+   
+        // std::cout << "RegCoeffNum3d * reg_count: " << RegCoeffNum3d * reg_count << std::endl;
+        // std::cout << "reg_vector size: " << reg_vector.size()  << std::endl;
+        int *reg_type = reg_vector.data();
         float *reg_params = (float *) malloc(RegCoeffNum3d * (reg_count + 1) * sizeof(float));
-        for (int i = 0; i < RegCoeffNum3d; i++)
-            reg_params[i] = 0;
-        T reg_precisions[RegCoeffNum3d];
-        for (int i = 0; i < RegCoeffNum3d - 1; i++) {
-            reg_precisions[i] = params.regression_param_eb_linear;
-        }
-        reg_precisions[RegCoeffNum3d - 1] = params.regression_param_eb_independent;
-        float *prev_reg_params = reg_params;
-        float *reg_params_pos = reg_params + RegCoeffNum3d;
-        const int *type_pos = (const int *) reg_type;
-        for (int i = 0; i < reg_count; i++) {
-            for (int j = 0; j < RegCoeffNum3d; j++) {
-                *reg_params_pos = recover_reg_coeff(*prev_reg_params, reg_precisions[j], *(type_pos++), RegCoeffRadius,
-                                                    reg_unpredictable_data_pos);
-                prev_reg_params++, reg_params_pos++;
+
+        if (real == 1)
+        {
+            for (int i = 0; i < RegCoeffNum3d; i++)
+                reg_params[i] = 0;
+            T reg_precisions[RegCoeffNum3d];
+            for (int i = 0; i < RegCoeffNum3d - 1; i++) {
+                reg_precisions[i] = params.regression_param_eb_linear;
+            }
+            reg_precisions[RegCoeffNum3d - 1] = params.regression_param_eb_independent;
+            float *prev_reg_params = reg_params;
+            float *reg_params_pos = reg_params + RegCoeffNum3d;
+            const int *type_pos = (const int *) reg_type;
+            for (int i = 0; i < reg_count; i++) {
+                for (int j = 0; j < RegCoeffNum3d; j++) {
+                    *reg_params_pos = recover_reg_coeff(*prev_reg_params, reg_precisions[j], *(type_pos++), RegCoeffRadius,
+                                                        reg_unpredictable_data_pos);
+                    prev_reg_params++, reg_params_pos++;
+                }
             }
         }
+
 //        free(reg_type);
         return reg_params;
     }
@@ -98,9 +105,11 @@ namespace SZMETA {
         SZ::write(reg_unpredictable_data, reg_unpredictable_count, compressed_pos);
 
         // reg_huffman.preprocess_encode(reg_params_type, reg_count, 0);
+        
         // reg_huffman.save(compressed_pos);
         // reg_huffman.encode(reg_params_type, reg_count, compressed_pos);
         // reg_huffman.postprocess_encode();
+        
 //        Huffman_encode_tree_and_data(2 * RegCoeffCapacity, reg_params_type, reg_count, compressed_pos);
     }
 

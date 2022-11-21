@@ -31,7 +31,7 @@ namespace SZ {
 
         ~SZGeneralFrontend() = default;
 
-        std::vector<int> compress(T *data, size_t x, size_t y, size_t z) {
+        std::vector<int> compress(T *data, size_t x, size_t y, size_t z, size_t szBlk) {
             std::vector<int> quant_inds(num_elements);
             auto block_range = std::make_shared<SZ::multi_dimensional_range<T, N>>(
                     data, std::begin(global_dimensions), std::end(global_dimensions), block_size, 0);
@@ -94,15 +94,16 @@ namespace SZ {
             return dec_data;
         }
 
-        int *save(uchar *&c, size_t &regCnt) {
+        int *save(uchar *&c, size_t &regCnt, size_t szBlk) {
             write(global_dimensions.data(), N, c);
             write(block_size, c);
 
             predictor.save(c);
             quantizer.save(c);
+            return 0;
         }
 
-        void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z) {
+        void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z, size_t &regCnt, std::vector<int> &quant_inds, bool real) {
         // void load(const uchar *&c, size_t &remaining_length) {
             read(global_dimensions.data(), N, c, remaining_length);
             num_elements = 1;
@@ -132,6 +133,10 @@ namespace SZ {
         int get_radius() const { return quantizer.get_radius(); }
 
         size_t get_blkSize() { 
+            return 0; 
+        }
+
+        size_t get_ifTree() { 
             return 0; 
         }
 

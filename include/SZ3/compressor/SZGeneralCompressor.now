@@ -54,46 +54,35 @@ namespace SZ {
 
             if (conf.ifTree == false)
             {
-                size_t *ind = new size_t[maxBlk]{0};
-                for(int i = 0; i < maxBlk; ++i) {
-                    ind[i] = c[i] * blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1);
-                    // std::cout << ind[i] << std::endl;
-                }
+                // size_t *ind = new size_t[maxBlk]{0};
+                // for(int i = 0; i < maxBlk; ++i) {
+                //     ind[i] = c[i] * blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1);
+                //     // std::cout << ind[i] << std::endl;
+                // }
 
-                double ***ts = new double**[maxBlk]{0};
-                size_t h=0;
-                for(int i = 0; i < maxBlk; ++i) 
-                {
-                    ts[i] = new double*[c[i]];
-                    for (size_t j = 0; j < c[i]; j++) 
-                    {
-                        ts[i][j] = new double [blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1)];
-                        for (size_t k = 0; k < blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1); k++) 
-                        {
-                            ts[i][j][k] = data[h];
-                            h++;
-                        }
-                    }   
-                }
+                // double **ts = new double*[maxBlk]{0};
+                // size_t k=0;
+                // for(int i = 0; i < maxBlk; ++i) {
+                //     ts[i] = new double[ind[i]];
+                //     for (size_t j = 0; j < ind[i]; j++)
+                //     {
+                //         ts[i][j] = data[k];
+                //         k++;
+                //     }
+                // }
 
-                for(int i = 0; i < maxBlk; ++i) {
-                    if (c[i] > 0) {
-                        for (size_t j = 0; j < c[i]; j++)
-                        {
-                            auto quant_blk = frontend.compress(ts[i][j], blkSize * (i + 1), blkSize * (i + 1), blkSize * (i + 1), szBlk);
-                            quant_inds.insert(quant_inds.end(), quant_blk.begin(), quant_blk.end());
-                            // std::cout << "quant size: " << quant_inds.size() << std::endl;
-                            int* meta_blk = frontend.save(buffer_pos, regCnt, szBlk);
-                            // meta_inds.insert(meta_inds.end(), meta_blk.begin(), meta_blk.end());
-                            for (size_t k = 0; k < regCnt; k++)
-                            {
-                                metaTemp[regCntSum] = meta_blk[k];
-                                regCntSum++;
-                            } 
-                        }
-                    }
-                }
-
+                // for(int i = 0; i < maxBlk; ++i) {
+                //     if (c[i] > 0) {
+                //         conf.dims[2] = blkSize * (i + 1);
+                //         conf.dims[1] = blkSize * (i + 1);
+                //         conf.dims[0] = blkSize * (i + 1) * c[i];
+                //         // std::cout << "dims: "<<conf.dims[0] << " " <<conf.dims[1] << " " <<conf.dims[2] << std::endl;
+                //         auto quant_blk = frontend.compress(ts[i], conf.dims[2], conf.dims[1],conf.dims[0]);
+                //         quant_inds.insert(quant_inds.end(), quant_blk.begin(), quant_blk.end());
+                //         std::cout << "quant size: " << quant_inds.size() << std::endl;
+                //         // bufferSize += 1.5 * (frontend.size_est());
+                //     }
+                // }
             } 
             else if (conf.ifTree == true) {
                 // std::cout << "ttttttttttttt" << std::endl;
@@ -135,7 +124,7 @@ namespace SZ {
                             {
                                 // if (i == 0)
                                 // {
-                                //     szBlk = 4;
+                                //     szBlk = 8;
                                 // }
                                 auto quant_blk = frontend.compress(ts[i][j], x, y, z, szBlk);
                                 quant_inds.insert(quant_inds.end(), quant_blk.begin(), quant_blk.end());
@@ -264,10 +253,12 @@ namespace SZ {
                         }
                     }
                 }
-            }
-            std::cout << "regCntSum: " << regCntSum << std::endl;
+                std::cout << "regCntSum: " << regCntSum << std::endl;
 
-        
+
+            }
+
+            
 
             // int* meta = new int[regCntSum];
             // for (size_t i = 0; i < regCntSum; i++)
@@ -356,14 +347,13 @@ namespace SZ {
             size_t init_length = cmpSize;
             size_t regCnt;
             size_t regCntSum = 0;
-            std::cout << "cmpSize: " << cmpSize << std::endl;
+            // std::cout << "cmpSize: " << cmpSize << std::endl;
 
             Timer timer(true);
             auto compressed_data = lossless.decompress(cmpData, remaining_length);
             uchar const *compressed_data_pos = compressed_data;
             // uchar const *init_pos = compressed_data;
             size_t maxBlk = frontend.get_blkNum();
-            bool ifTree = frontend.get_ifTree();
             size_t* c = frontend.get_meta();
             size_t cSum = 0;
             for (size_t i = 0; i < maxBlk; i++){
@@ -428,115 +418,53 @@ namespace SZ {
             //         count++;
             //     }  
             // }
-            if (ifTree == true)
-            {
-                double ***ts = new double**[maxBlk]{0};
-                size_t h=0;
-                for(int i = 0; i < maxBlk; ++i) 
-                {
-                    ts[i] = new double*[c[i]];
-                    for (size_t j = 0; j < c[i]; j++) 
-                    {
-                        ts[i][j] = new double [int(pow(2, i))* blkSize * blkSize * blkSize];
-                    }   
-                }
-
-                count = 0;
-                size_t x, z;
-                size_t tempInd = 0;
-                for (size_t i = 0; i < maxBlk; i++)
-                {
-                    // std::cout << "iii: " << i << std::endl;
-                    if (c[i] > 0) {
-                        double treeBlkSize = pow(2, i);
-                        double temp_0 = std::cbrt(treeBlkSize);
-                        double temp_1 = std::cbrt(treeBlkSize * 2);
-                        double temp_2 = std::cbrt(treeBlkSize/2);
-                        if (temp_0 - int(temp_0) == 0){
-                            x = blkSize * int(temp_0);
-                            z = x;
-                        } else if (temp_1 - int(temp_1) == 0) {
-                            x = blkSize * int(temp_1);
-                            z = x/2;
-                        } else {
-                            x = blkSize * int(temp_2);
-                            z = x * 2;
-                        }
-                        for (size_t j = 0; j < c[i]; j++) {
-                            // frontend.load(init_pos, init_length, x, x, z * c[i]);
-                            std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
-                            frontend.load(ptr[count], remainArr[count], x, x, z, regCnt, sub_reg, 1);
-                            // std::cout << z * c[i] << " " << x << " " << x << std::endl;
-                            std::vector<int> sub_quant {quant_inds.begin() + tempInd, quant_inds.begin() + tempInd + x * x * z};
-                            tempInd += x * x * z;
-                            encoder.postprocess_decode();
-                            frontend.decompress(sub_quant, ts[i][j]);
-                            // frontend.clear();
-                            count++;
-                        }
-                    }
-                }
-                lossless.postdecompress_data(compressed_data);
-                h = 0;
-
-                for (size_t i = 0; i < maxBlk; i++){
-                    for (size_t j = 0; j < c[i]; j++) {
-                        for (size_t k = 0; k < pow(2, i)* blkSize * blkSize * blkSize; k++) 
-                        {
-                            decData[h] = ts[i][j][k];
-                            h++;
-                        }
-                    }
-                }
-
-            } else {
-                double ***ts = new double**[maxBlk]{0};
-                size_t h=0;
-                for(int i = 0; i < maxBlk; ++i) 
-                {
-                    ts[i] = new double*[c[i]];
-                    for (size_t j = 0; j < c[i]; j++) 
-                    {
-                        ts[i][j] = new double [blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1)];
-                    }   
-                }
-
-                count = 0;
-                size_t x, z;
-                size_t tempInd = 0;
-                for (size_t i = 0; i < maxBlk; i++)
-                {
-                    // std::cout << "iii: " << i << std::endl;
-                    if (c[i] > 0) {
-                        size_t x = blkSize * (i + 1);
-                        for (size_t j = 0; j < c[i]; j++) {
-                            // frontend.load(init_pos, init_length, x, x, z * c[i]);
-                            std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
-                            frontend.load(ptr[count], remainArr[count], x, x, x, regCnt, sub_reg, 1);
-                            // std::cout << z * c[i] << " " << x << " " << x << std::endl;
-                            std::vector<int> sub_quant {quant_inds.begin() + tempInd, quant_inds.begin() + tempInd + x * x * x};
-                            tempInd += x * x * x;
-                            encoder.postprocess_decode();
-                            frontend.decompress(sub_quant, ts[i][j]);
-                            // frontend.clear();
-                            count++;
-                        }
-                    }
-                }
-                lossless.postdecompress_data(compressed_data);
-
-                for (size_t i = 0; i < maxBlk; i++){
-                    for (size_t j = 0; j < c[i]; j++) {
-                        for (size_t k = 0; k < blkSize * (i + 1) * blkSize * (i + 1) * blkSize * (i + 1); k++) 
-                        {
-                            decData[h] = ts[i][j][k];
-                            h++;
-                        }
-                    }
-                }
-
-            }
             
+            double ***ts = new double**[maxBlk]{0};
+            size_t h=0;
+            for(int i = 0; i < maxBlk; ++i) 
+            {
+                ts[i] = new double*[c[i]];
+                for (size_t j = 0; j < c[i]; j++) 
+                {
+                    ts[i][j] = new double [int(pow(2, i))* blkSize * blkSize * blkSize];
+                }   
+            }
+
+            count = 0;
+            size_t x, z;
+            size_t tempInd = 0;
+            for (size_t i = 0; i < maxBlk; i++)
+            {
+                // std::cout << "iii: " << i << std::endl;
+                if (c[i] > 0) {
+                    double treeBlkSize = pow(2, i);
+                    double temp_0 = std::cbrt(treeBlkSize);
+                    double temp_1 = std::cbrt(treeBlkSize * 2);
+                    double temp_2 = std::cbrt(treeBlkSize/2);
+                    if (temp_0 - int(temp_0) == 0){
+                        x = blkSize * int(temp_0);
+                        z = x;
+                    } else if (temp_1 - int(temp_1) == 0) {
+                        x = blkSize * int(temp_1);
+                        z = x/2;
+                    } else {
+                        x = blkSize * int(temp_2);
+                        z = x * 2;
+                    }
+                    for (size_t j = 0; j < c[i]; j++) {
+                        // frontend.load(init_pos, init_length, x, x, z * c[i]);
+                        std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
+                        frontend.load(ptr[count], remainArr[count], x, x, z, regCnt, sub_reg, 1);
+                        // std::cout << z * c[i] << " " << x << " " << x << std::endl;
+                        std::vector<int> sub_quant {quant_inds.begin() + tempInd, quant_inds.begin() + tempInd + x * x * z};
+                        tempInd += x * x * z;
+                        encoder.postprocess_decode();
+                        frontend.decompress(sub_quant, ts[i][j]);
+                        // frontend.clear();
+                        count++;
+                    }
+                }
+            }
 
             //   for(int i = 0; i < 2; ++i) {
             //         for (size_t j = 0; j < ind[i]; j++){
@@ -544,6 +472,18 @@ namespace SZ {
             //         }
             //     }
 
+            lossless.postdecompress_data(compressed_data);
+            
+            h = 0;
+            for (size_t i = 0; i < maxBlk; i++){
+                for (size_t j = 0; j < c[i]; j++) {
+                    for (size_t k = 0; k < pow(2, i)* blkSize * blkSize * blkSize; k++) 
+                    {
+                        decData[h] = ts[i][j][k];
+                        h++;
+                    }
+                }
+            }
             return decData;
         }
 

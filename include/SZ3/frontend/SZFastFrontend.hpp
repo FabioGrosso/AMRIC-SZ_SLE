@@ -38,9 +38,9 @@ namespace SZ {
         void print() {};
 
 
-        std::vector<int> compress(T *data, size_t x, size_t y, size_t z) {
+        std::vector<int> compress(T *data, size_t x, size_t y, size_t z, size_t szBlk) {
             // std::vector<int> compress(T *data) {
-            return compress_3d(data, x, y, z);
+            return compress_3d(data, x, y, z, szBlk);
         };
 
         T *decompress(std::vector<int> &quant_inds, T *dec_data) {
@@ -49,8 +49,8 @@ namespace SZ {
         };
 
 
-        int *save(uchar *&c, size_t &regCnt) {
-
+        int *save(uchar *&c, size_t &regCnt, size_t szBlk) {
+            params.block_size = szBlk;
             write(params, c);
             write(precision, c);
 //            write(intv_radius, c);
@@ -93,7 +93,7 @@ namespace SZ {
             return reg_params_type;
         }
 
-        void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z) {
+        void load(const uchar *&c, size_t &remaining_length, size_t x, size_t y, size_t z, size_t &regCnt, std::vector<int> &reg_vector, bool real) {
         // void load(const uchar *&c, size_t &remaining_length) {
             clear();
             const uchar *c_pos = c;
@@ -108,6 +108,7 @@ namespace SZ {
             read(reg_count, c, remaining_length);
             // std::cout << "value: " << reg_count << std::endl;
 
+            regCnt = RegCoeffNum3d * reg_count;
             // size_t r1 = conf.dims[0];
             // size_t r2 = conf.dims[1];
             // size_t r3 = conf.dims[2];
@@ -115,6 +116,7 @@ namespace SZ {
             size_t r2 = y;
             size_t r3 = x;
             size = SZMETA::DSize_3d(r1, r2, r3, params.block_size);
+            // std::cout << "block_size_1 : " << params.block_size << std::endl;
             // prepare unpred buffer for vectorization
             est_unpred_count_per_index = size.num_blocks * size.block_size * 1;
             // if(!params.block_independant) est_unpred_count_per_index /= 20;
@@ -137,10 +139,9 @@ namespace SZ {
             indicator_huffman.load(c, remaining_length);
             indicator = indicator_huffman.decode(c, size.num_blocks);
             indicator_huffman.postprocess_decode();
-
             if (reg_count) {
                 reg_params = decode_regression_coefficients(c, reg_count, size.block_size, precision,
-                                                            params);
+                                                            params, reg_vector, real);
             }
             quantizer.load(c, remaining_length);
             remaining_length -= c_pos - c;
@@ -187,6 +188,10 @@ namespace SZ {
             return conf.blkSize; 
         }
 
+        size_t get_ifTree() { 
+            return conf.ifTree; 
+        }
+
         size_t* get_meta() { 
             return conf.meta; 
         }
@@ -205,7 +210,7 @@ namespace SZ {
 //        compress_3d(const T *data, size_t r1, size_t r2, size_t r3, double precision, size_t &compressed_size,
 //                    const SZMETA::meta_params &params, SZMETA::CompressStats &compress_info) {
         // std::vector<int> compress_3d(const T *data) {
-            std::vector<int> compress_3d( T *data, size_t x, size_t y, size_t z) {
+            std::vector<int> compress_3d( T *data, size_t x, size_t y, size_t z, size_t szBlk) {
             clear();
             size_t r1 = z;
             size_t r2 = y;
@@ -214,7 +219,7 @@ namespace SZ {
             // size_t r2 = conf.dims[1];
             // size_t r3 = conf.dims[2];
             // std::cout << "dims: "<<z << " " <<y << " " <<x << std::endl;
-            size = SZMETA::DSize_3d(r1, r2, r3, conf.blockSize);
+            size = SZMETA::DSize_3d(r1, r2, r3, szBlk);
 
 //            capacity = 0; // num of quant intervals
 //            mean_info = optimize_quant_invl_3d(data, r1, r2, r3, conf.absErrorBound, capacity);
