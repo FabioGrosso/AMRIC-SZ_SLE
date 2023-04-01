@@ -7,20 +7,24 @@
 #include "SZ3/api/impl/SZInterp.hpp"
 #include "SZ3/api/impl/SZLorenzoReg.hpp"
 #include <cmath>
+#include <iostream>
 
 
 template<class T, SZ::uint N>
 char *SZ_compress_dispatcher(SZ::Config &conf, T *data, size_t &outSize) {
-
+     std::cout << "enter SZ_compress_dispatcher" << std::endl;
     assert(N == conf.N);
     SZ::calAbsErrorBound(conf, data);
 
     char *cmpData;
     if (conf.cmprAlgo == SZ::ALGO_LORENZO_REG) {
+        std::cout << "SZ::ALGO_LORENZO_REG" << std::endl;
         cmpData = (char *) SZ_compress_LorenzoReg<T, N>(conf, data, outSize);
     } else if (conf.cmprAlgo == SZ::ALGO_INTERP) {
+        std::cout << "SZ::ALGO_INTERP" << std::endl;
         cmpData = (char *) SZ_compress_Interp<T, N>(conf, data, outSize);
     } else if (conf.cmprAlgo == SZ::ALGO_INTERP_LORENZO) {
+        std::cout << "SZ::ALGO_INTERP_LORENZO" << std::endl;
         cmpData = (char *) SZ_compress_Interp_lorenzo<T, N>(conf, data, outSize);
     }
     return cmpData;
@@ -30,8 +34,10 @@ char *SZ_compress_dispatcher(SZ::Config &conf, T *data, size_t &outSize) {
 template<class T, SZ::uint N>
 void SZ_decompress_dispatcher(SZ::Config &conf, char *cmpData, size_t cmpSize, T *decData) {
     if (conf.cmprAlgo == SZ::ALGO_LORENZO_REG) {
+        std::cout << "SZ::ALGO_LORENZO_REG" << std::endl;
         SZ_decompress_LorenzoReg<T, N>(conf, cmpData, cmpSize, decData);
     } else if (conf.cmprAlgo == SZ::ALGO_INTERP) {
+        std::cout << "SZ::ALGO_INTERP" << std::endl;
         SZ_decompress_Interp<T, N>(conf, cmpData, cmpSize, decData);
     } else {
         printf("SZ_decompress_dispatcher, Method not supported\n");

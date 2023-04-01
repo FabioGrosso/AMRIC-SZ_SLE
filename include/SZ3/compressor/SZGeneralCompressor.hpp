@@ -115,6 +115,8 @@ namespace SZ {
 
             Timer timer(true);
             size_t blkSize = frontend.get_blkSize();
+            std::cout << "blkSize: " << blkSize << std::endl;
+            std::cout << "frontend.get_num_elements()" << frontend.get_num_elements() << std::endl;
             size_t blkSize3D = blkSize*blkSize*blkSize;
             size_t blkNum = frontend.get_num_elements()/(blkSize3D);
 
@@ -153,7 +155,6 @@ namespace SZ {
             auto quant_inds = encoder.decode(compressed_data_pos, frontend.get_num_elements());
 
             std::cout << "de quant size: " << quant_inds.size() << std::endl;
-
 
             count = 0;
 

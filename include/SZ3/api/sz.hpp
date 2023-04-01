@@ -5,6 +5,7 @@
 #include "SZ3/api/impl/SZImpl.hpp"
 #include "SZ3/version.hpp"
 #include <memory>
+#include <iostream>
 
 /**
  * API for compression
@@ -52,7 +53,13 @@ char *compressedData = SZ_compress(conf, data, outSize);
  */
 template<class T>
 char *SZ_compress(const SZ::Config &conf, const T *data, size_t &outSize) {
+// static_assert(false, "wanted inclusion");
     SZ::Config confCopy(conf);
+    std::cout << "enter SZ_compress" << std::endl;
+    printf("enter SZ_compress\n");
+
+
+
     char *cmpData;
     if (conf.N == 1) {
         cmpData = SZ_compress_impl<T, 1>(confCopy, data, outSize);
@@ -98,6 +105,7 @@ template<class T>
 void SZ_decompress(SZ::Config &conf, char *cmpData, size_t cmpSize, T *&decData) {
     {
         //load config
+        std::cout << "enter SZ_decompress" << std::endl;
         int confSize;
         memcpy(&confSize, cmpData + (cmpSize - sizeof(int)), sizeof(int));
         SZ::uchar const *cmpDataPos = (SZ::uchar *) cmpData + (cmpSize - sizeof(int) - confSize);

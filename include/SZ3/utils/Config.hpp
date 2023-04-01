@@ -144,6 +144,8 @@ namespace SZ {
             write(stride, c);
             write(pred_dim, c);
             write(openmp, c);
+            write(blkSize, c);
+            write(totalLength, c);
         };
 
         void load(const unsigned char *&c) {
@@ -169,6 +171,8 @@ namespace SZ {
             read(stride, c);
             read(pred_dim, c);
             read(openmp, c);
+            read(blkSize, c);
+            read(totalLength, c);
         }
 
         void print() {

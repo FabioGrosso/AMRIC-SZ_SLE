@@ -1,13 +1,13 @@
 #Either use:
 #find_package(HDF5 1.12.1 REQUIRED)
 #or manually set the hdf5 paths:
-#set(HDF5_LIBRARIES "/path/to/hdf5-1.12.1/hdf5/lib/libhdf5.so")
-#set(HDF5_INCLUDE_DIRS "/path/to/hdf5-1.12.1/hdf5/include")
+set(HDF5_LIBRARIES "/home/daoce.wang/hdf5-1.12.2/install/lib/libhdf5.so")
+set(HDF5_INCLUDE_DIRS "/home/daoce.wang/hdf5-1.12.2/install/include")
 
-find_package(HDF5 REQUIRED)
+# find_package(HDF5 REQUIRED)
 
-#message("HDF5LIB PATH:" ${HDF5_LIBRARIES})
-#message("HDF5INCLUDE PATH:" ${HDF5_INCLUDE_DIRS})
+message("HDF5LIB PATH:" ${HDF5_LIBRARIES})
+message("HDF5INCLUDE PATH:" ${HDF5_INCLUDE_DIRS})
 
 add_library(
         hdf5sz3
