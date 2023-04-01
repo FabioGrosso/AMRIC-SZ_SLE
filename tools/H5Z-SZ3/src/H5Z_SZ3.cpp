@@ -6,7 +6,7 @@
 #include "H5Z_SZ3.hpp"
 #include <fstream>
 #include "H5PLextern.h"
-#include "/home/daoce.wang/develop/SZ_SLE/include/SZ3/api/sz.hpp"
+#include "SZ3/api/sz.hpp"
 #include "SZ3/utils/ByteUtil.hpp"
 #define BSIZE 8
 int cnt[5] = {0,0,0,0,0};
@@ -379,7 +379,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         int level = (int)l2norm_error;
         if (print) {printf("level: %d\n", level); print=0;}
         int finest_level;
-        FILE* fFile = fopen("/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/f.txt", "r+");
+        FILE* fFile = fopen("../meta/f.txt", "r+");
         if (fFile == NULL) {
             printf("Could not open f file!\n");
             return 1;
@@ -388,7 +388,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         fclose(fFile);
 
         int ncomp;
-        FILE* nFile = fopen("/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/ncomp.txt", "r+");
+        FILE* nFile = fopen("../meta/ncomp.txt", "r+");
         if (nFile == NULL) {
             printf("Could not open ncomp file!\n");
             return 1;
@@ -397,7 +397,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         fclose(nFile);
 
         int nProcs;
-        FILE* pFile = fopen("/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/p.txt", "r+");
+        FILE* pFile = fopen("../meta/p.txt", "r+");
         if (pFile == NULL) {
             printf("Could not open p file!\n");
             return 1;
@@ -408,7 +408,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
                 long realLength;
         char meta_name[640];
         if (level == finest_level) {
-            sprintf(meta_name, "/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/meta_%d.txt", level);
+            sprintf(meta_name, "../meta/meta_%d.txt", level);
             FILE* file = fopen(meta_name, "r+");
             if (file == NULL) {
                 printf("Could not open meta file!\n");
@@ -424,7 +424,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             }
             fclose(file);
         } else {
-            sprintf(meta_name, "/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/meta_%d_%d.txt", level, cnt[level]/ncomp);
+            sprintf(meta_name, "../meta/meta_%d_%d.txt", level, cnt[level]/ncomp);
             FILE* file = fopen(meta_name, "r+");
             if (file == NULL) {
                 printf("Could not open meta file!\n");
@@ -436,7 +436,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             while (realLength < 0) {
                 printf("-----------------------------: %ld\n", cnt[level] / ncomp);
                 cnt[level] += ncomp;
-                sprintf(meta_name, "/home/daoce.wang/develop/Nyx/Exec/AMR-density/meta/meta_%d_%d.txt", level, cnt[level] / ncomp);
+                sprintf(meta_name, "../meta/meta_%d_%d.txt", level, cnt[level] / ncomp);
                 file = fopen(meta_name, "r+");
 
                 if (file == NULL) {
@@ -485,85 +485,85 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             break;
         }
 
-        case SZ_INT8: //INT 8
-        {
-            int8_t *c_decompressedData = new int8_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, c_decompressedData);
-            free(*buf);
-            *buf = c_decompressedData;
-            *buf_size = nbEle * sizeof(int8_t);
-            break;
-        }
+        // case SZ_INT8: //INT 8
+        // {
+        //     int8_t *c_decompressedData = new int8_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, c_decompressedData);
+        //     free(*buf);
+        //     *buf = c_decompressedData;
+        //     *buf_size = nbEle * sizeof(int8_t);
+        //     break;
+        // }
 
-        case SZ_UINT8: //UINT 8
-        {
-            uint8_t *uc_decompressedData = new uint8_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, uc_decompressedData);
-            free(*buf);
-            *buf = uc_decompressedData;
-            *buf_size = nbEle * sizeof(uint8_t);
-            break;
-        }
+        // case SZ_UINT8: //UINT 8
+        // {
+        //     uint8_t *uc_decompressedData = new uint8_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, uc_decompressedData);
+        //     free(*buf);
+        //     *buf = uc_decompressedData;
+        //     *buf_size = nbEle * sizeof(uint8_t);
+        //     break;
+        // }
 
-        case SZ_INT16: //INT 16
-        {
-            int16_t *s_decompressedData = new int16_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, s_decompressedData);
-            free(*buf);
-            *buf = s_decompressedData;
-            *buf_size = nbEle * sizeof(int16_t);
-            break;
-        }
+        // case SZ_INT16: //INT 16
+        // {
+        //     int16_t *s_decompressedData = new int16_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, s_decompressedData);
+        //     free(*buf);
+        //     *buf = s_decompressedData;
+        //     *buf_size = nbEle * sizeof(int16_t);
+        //     break;
+        // }
 
-        case SZ_UINT16: //UINT 16
-        {
-            uint16_t *us_decompressedData = new uint16_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, us_decompressedData);
-            free(*buf);
-            *buf = us_decompressedData;
-            *buf_size = nbEle * sizeof(uint16_t);
-            break;
-        }
+        // case SZ_UINT16: //UINT 16
+        // {
+        //     uint16_t *us_decompressedData = new uint16_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, us_decompressedData);
+        //     free(*buf);
+        //     *buf = us_decompressedData;
+        //     *buf_size = nbEle * sizeof(uint16_t);
+        //     break;
+        // }
 
-        case SZ_INT32: //INT 32
-        {
-            int32_t *i_decompressedData = new int32_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, i_decompressedData);
-            free(*buf);
-            *buf = i_decompressedData;
-            *buf_size = nbEle * sizeof(int32_t);
-            break;
-        }
+        // case SZ_INT32: //INT 32
+        // {
+        //     int32_t *i_decompressedData = new int32_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, i_decompressedData);
+        //     free(*buf);
+        //     *buf = i_decompressedData;
+        //     *buf_size = nbEle * sizeof(int32_t);
+        //     break;
+        // }
 
-        case SZ_UINT32: //UINT 32
-        {
-            uint32_t *ui_decompressedData = new uint32_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, ui_decompressedData);
-            free(*buf);
-            *buf = ui_decompressedData;
-            *buf_size = nbEle * sizeof(uint32_t);
-            break;
-        }
+        // case SZ_UINT32: //UINT 32
+        // {
+        //     uint32_t *ui_decompressedData = new uint32_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, ui_decompressedData);
+        //     free(*buf);
+        //     *buf = ui_decompressedData;
+        //     *buf_size = nbEle * sizeof(uint32_t);
+        //     break;
+        // }
 
-        case SZ_INT64: //INT 64
-        {
-            int64_t *l_decompressedData = new int64_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, l_decompressedData);
-            free(*buf);
-            *buf = l_decompressedData;
-            *buf_size = nbEle * sizeof(int64_t);
-            break;
-        }
+        // case SZ_INT64: //INT 64
+        // {
+        //     int64_t *l_decompressedData = new int64_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, l_decompressedData);
+        //     free(*buf);
+        //     *buf = l_decompressedData;
+        //     *buf_size = nbEle * sizeof(int64_t);
+        //     break;
+        // }
 
-        case SZ_UINT64: //UINT 64
-        {
-            uint64_t *ul_decompressedData = new uint64_t[nbEle];
-            SZ_decompress(conf, (char *) *buf, nbytes, ul_decompressedData);
-            free(*buf);
-            *buf = ul_decompressedData;
-            *buf_size = nbEle * sizeof(uint64_t);
-            break;
-        }
+        // case SZ_UINT64: //UINT 64
+        // {
+        //     uint64_t *ul_decompressedData = new uint64_t[nbEle];
+        //     SZ_decompress(conf, (char *) *buf, nbytes, ul_decompressedData);
+        //     free(*buf);
+        //     *buf = ul_decompressedData;
+        //     *buf_size = nbEle * sizeof(uint64_t);
+        //     break;
+        // }
 
         default:
         {
@@ -647,7 +647,6 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             conf.loadcfg(CONFIG_PATH);
         }
         else {
-            printf("use my config ...\n");
             conf.errorBoundMode = error_mode;
             conf.absErrorBound = abs_error;
             conf.relErrorBound = rel_error;
@@ -668,31 +667,32 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
                 exit(0);
             }
 
-            throw std::runtime_error("sz filter");
+  
             conf.interpAlgo = interp_algo;
             
             conf.cmprAlgo = 0;
-            std::cout << "wtwtwtwtwtwtwtwtwtwtwt" << conf.cmprAlgo << std::endl;
             conf.lorenzo = true; // only use 1st order lorenzo
             conf.lorenzo2 = false;
             conf.regression = true;
             conf.regression2 = false;
             conf.blkSize = r2;
             conf.totalLength = r2*r1*r3;
-            conf.blockSize = 6;
-            std::cout << "lorenzo" << conf.lorenzo << std::endl;
-            std::cout << "lorenzo2" << conf.lorenzo2 << std::endl;
-            std::cout << "regression" << conf.regression << std::endl;
-            std::cout << "regression2" << conf.regression2 << std::endl;
-            std::cout << "blkSize" << conf.blkSize << std::endl;
-            std::cout << "totalLength" << conf.totalLength << std::endl;
+            conf.blockSize = 4;
 
         }
 
         size_t outSize = 0;
         char* compressedData = NULL;
 
+        // throw std::runtime_error("intended failure.");
 
+//         struct adhoc {
+//             static char *SZ_compress_ours(const SZ::Config &conf, const double *data, size_t &outSize) { 
+//                 return SZ_compress(conf, data, outSize);
+//             }
+//         };
+
+// compressedData = adhoc::SZ_compress_ours(conf, (double*) *buf, outSize);
         switch(dataType) {
         case SZ_FLOAT: //FLOAT
         {
@@ -706,53 +706,53 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             break;
         }
 
-        case SZ_INT8: //INT 8
-        {
-            compressedData = SZ_compress(conf, (int8_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_INT8: //INT 8
+        // {
+        //     compressedData = SZ_compress(conf, (int8_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_UINT8: //UINT 8
-        {
-            compressedData = SZ_compress(conf, (uint8_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_UINT8: //UINT 8
+        // {
+        //     compressedData = SZ_compress(conf, (uint8_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_INT16: //INT 16
-        {
-            compressedData = SZ_compress(conf, (int16_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_INT16: //INT 16
+        // {
+        //     compressedData = SZ_compress(conf, (int16_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_UINT16: //UINT 16
-        {
-            compressedData = SZ_compress(conf, (uint16_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_UINT16: //UINT 16
+        // {
+        //     compressedData = SZ_compress(conf, (uint16_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_INT32: //INT 32
-        {
-            compressedData = SZ_compress(conf, (int32_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_INT32: //INT 32
+        // {
+        //     compressedData = SZ_compress(conf, (int32_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_UINT32: //UINT 32
-        {
-            compressedData = SZ_compress(conf, (uint32_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_UINT32: //UINT 32
+        // {
+        //     compressedData = SZ_compress(conf, (uint32_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_INT64: //INT 64
-        {
-            compressedData = SZ_compress(conf, (int64_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_INT64: //INT 64
+        // {
+        //     compressedData = SZ_compress(conf, (int64_t*) *buf, outSize);
+        //     break;
+        // }
 
-        case SZ_UINT64: //UINT 64
-        {
-            compressedData = SZ_compress(conf, (uint64_t*) *buf, outSize);
-            break;
-        }
+        // case SZ_UINT64: //UINT 64
+        // {
+        //     compressedData = SZ_compress(conf, (uint64_t*) *buf, outSize);
+        //     break;
+        // }
 
         default:
         {
