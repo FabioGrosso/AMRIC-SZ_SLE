@@ -351,7 +351,6 @@ done:
 static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[], size_t nbytes, size_t* buf_size, void** buf)
 {
 	if(print) {printf("get into H5Z_filter_sz3\n"); print=0;}
-    printf("\nIS: %u \n", * buf_size);
     size_t r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0;
     int dimSize = 0, dataType = 0;
 
@@ -367,6 +366,8 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         SZ_cdArrayToMetaDataErr(cd_nelmts, cd_values, &dimSize, &dataType, &r5, &r4, &r3, &r2, &r1, &error_mode, &abs_error, &rel_error, &l2norm_error, &psnr);
     else
         SZ_cdArrayToMetaData(cd_nelmts, cd_values, &dimSize, &dataType, &r5, &r4, &r3, &r2, &r1);
+
+    std::cout << "IS of level " << (int)l2norm_error << " " << * buf_size << std::endl;
 
 
 
@@ -761,7 +762,8 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         }
         }
 
-        printf("\nOS: %u \n", outSize);
+        // printf("\nOS: %u \n", outSize);
+        std::cout << "OS of level " << (int)l2norm_error << " " << outSize << std::endl;
         free(*buf);
         *buf = compressedData;
         *buf_size = outSize;

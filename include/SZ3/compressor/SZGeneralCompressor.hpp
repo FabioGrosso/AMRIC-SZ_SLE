@@ -45,7 +45,7 @@ namespace SZ {
             size_t regCntSum = 0;
             std::vector<int> quant_inds;
             std::vector<int> meta_inds;
-            size_t bufferSize = 59305830;
+            size_t bufferSize = 39305830;
             uchar *buffer = new uchar[bufferSize];
             uchar *buffer_pos = buffer;
             uchar *buffer_temp = buffer;
