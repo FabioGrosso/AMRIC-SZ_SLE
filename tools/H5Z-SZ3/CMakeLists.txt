@@ -1,8 +1,8 @@
 #Either use:
 #find_package(HDF5 1.12.1 REQUIRED)
 #or manually set the hdf5 paths:
-set(HDF5_LIBRARIES "/home/daoce.wang/hdf5-1.12.2/install/lib/libhdf5.so")
-set(HDF5_INCLUDE_DIRS "/home/daoce.wang/hdf5-1.12.2/install/include")
+set(HDF5_LIBRARIES "/gpfs/alpine/csc337/world-shared/amrc/hdf5-1.12.2/install/lib/libhdf5.so")
+set(HDF5_INCLUDE_DIRS "/gpfs/alpine/csc337/world-shared/amrc/hdf5-1.12.2/install/include")
 
 # find_package(HDF5 REQUIRED)
 

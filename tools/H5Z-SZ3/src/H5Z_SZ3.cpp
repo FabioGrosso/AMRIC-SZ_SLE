@@ -350,7 +350,7 @@ done:
 
 static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[], size_t nbytes, size_t* buf_size, void** buf)
 {
-	if(print) {printf("get into H5Z_filter_sz3\n"); print=0;}
+	//(print) {printf("get into H5Z_filter_sz3\n"); print=0;}
     size_t r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0;
     int dimSize = 0, dataType = 0;
 
@@ -367,7 +367,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
     else
         SZ_cdArrayToMetaData(cd_nelmts, cd_values, &dimSize, &dataType, &r5, &r4, &r3, &r2, &r1);
 
-    std::cout << "IS of level " << (int)l2norm_error << " " << * buf_size << std::endl;
+    //std::cout << "IS of level " << (int)l2norm_error << " " << * buf_size << std::endl;
 
 
 
@@ -456,7 +456,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         SZ::Config conf;
 
         // std::cout << conf.dims[0] << " " << conf.dims[1] << conf.dims[2] << std::endl;
-        std::cout << realLength << std::endl;
+        //std::cout << realLength << std::endl;
 
         switch(dataType) {
         case SZ_FLOAT: //FLOAT
@@ -472,7 +472,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         case SZ_DOUBLE: //DOUBLE
         {
             double *d_decompressedData = new double[nbEle];
-            // for(int i=0;i<nbEle;i++) d_decompressedData[i] = 0;
+            for(int i=0;i<nbEle;i++) d_decompressedData[i] = 0;
             if (realLength > 0) {
                 double *realData = new double[realLength];
                 SZ_decompress(conf, (char *) *buf, nbytes, realData);
@@ -596,10 +596,11 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
 		// r3 = r1/(BSIZE*BSIZE);
 		// r2 = BSIZE;
 		// r1 = BSIZE;
+	//std::cout <<  "realLength: " << r1 << std::endl;
         r2 = abs_error;
         r3 = r1/(r2*r2);
         r1 = r2;
-		printf("sz3Flite comp using nast, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
+		//printf("sz3Flite comp using nast, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
 
 		/*stack*/
 		// size_t unitBlkSize = BSIZE*BSIZE*BSIZE;
@@ -651,7 +652,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             conf.errorBoundMode = error_mode;
             conf.absErrorBound = abs_error;
             conf.relErrorBound = rel_error;
-            conf.l2normErrorBound = l2norm_error;
+            conf.l2normErrorBound = 0.01;
             conf.psnrErrorBound = psnr;
 
             //printf("PARAMS: mode|%i, abs_eb|%f, rel_eb|%f, l2_eb|%f, psnr_eb|%f\n", error_mode, abs_error, rel_error, l2norm_error, psnr);
@@ -678,7 +679,13 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             conf.regression2 = false;
             conf.blkSize = r2;
             conf.totalLength = r2*r1*r3;
-            conf.blockSize = 4;
+
+	    if (r2 == 8) {
+	    	conf.blockSize = 4;
+	    } else {
+            	conf.blockSize = 6;
+	    }
+	    //std::cout << conf.blockSize << std::endl;
 
         }
 
@@ -763,7 +770,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         }
 
         // printf("\nOS: %u \n", outSize);
-        std::cout << "OS of level " << (int)l2norm_error << " " << outSize << std::endl;
+        //std::cout << "OS of level " << (int)l2norm_error << " " << outSize << std::endl;
         free(*buf);
         *buf = compressedData;
         *buf_size = outSize;
