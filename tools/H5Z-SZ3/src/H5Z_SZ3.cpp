@@ -685,7 +685,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
 	    } else {
             	conf.blockSize = 6;
 	    }
-	    //std::cout << conf.blockSize << std::endl;
+	    //std::cout << "adp blkSize: " <<conf.blockSize << std::endl;
 
         }
 

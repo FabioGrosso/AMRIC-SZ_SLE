@@ -1,7 +1,3 @@
-//
-// Created by arham23 on 2/8/22.
-//
-
 #include <memory>
 #include "H5Z_SZ3.hpp"
 #include <fstream>
@@ -52,160 +48,160 @@ const void *H5PLget_plugin_info(void) {
 /**
  * to be used in compression, and to be called outside H5Z_filter_sz().
  * */
- 
+
  void SZ_refreshDimForCdArray(int dataType, size_t old_cd_nelmts, unsigned int *old_cd_values, size_t* new_cd_nelmts, unsigned int **new_cd_values, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
  {
-	 unsigned char bytes[8] = {0};
-	 *new_cd_values = (unsigned int*)malloc(sizeof(unsigned int)*16);
-	 memset(*new_cd_values, 0, sizeof(unsigned int)*16);
-	 
-	//correct dimension if needed
-	size_t _r[5];
-	filterDimension(r5, r4, r3, r2, r1, _r);
-	size_t _r5 = _r[4];
-	size_t _r4 = _r[3];
-	size_t _r3 = _r[2];
-	size_t _r2 = _r[1];
-	size_t _r1 = _r[0];	
- 
-	int i =0;
-	int oldDim = computeDimension(r5, r4, r3, r2, r1);
-	int newDim = computeDimension(_r5, _r4, _r3, _r2, _r1);
-	(*new_cd_values)[0] = newDim;
-	(*new_cd_values)[1] = dataType;
+         unsigned char bytes[8] = {0};
+         *new_cd_values = (unsigned int*)malloc(sizeof(unsigned int)*16);
+         memset(*new_cd_values, 0, sizeof(unsigned int)*16);
 
-	
-	switch(newDim)
-	{		
-		case 1:
-			longToBytes_bigEndian(bytes, (uint64_t) r1);
-			(*new_cd_values)[2] = bytesToInt_bigEndian(bytes);
-			(*new_cd_values)[3] = bytesToInt_bigEndian(&bytes[4]);	
-			if(old_cd_nelmts==0)
-				*new_cd_nelmts = 4;
-			else
-			{
-				(*new_cd_values)[4] = old_cd_values[0];
-				(*new_cd_values)[5] = old_cd_values[1];
-				(*new_cd_values)[6] = old_cd_values[2];
-				(*new_cd_values)[7] = old_cd_values[3];
-				(*new_cd_values)[8] = old_cd_values[4];
-				(*new_cd_values)[9] = old_cd_values[5];
-				(*new_cd_values)[10] = old_cd_values[6];
-				(*new_cd_values)[11] = old_cd_values[7];
-				(*new_cd_values)[12] = old_cd_values[8];
-				*new_cd_nelmts = 13;
-			}
-			break;		
-		case 2:
-			(*new_cd_values)[2] = (unsigned int) _r2;
-			(*new_cd_values)[3] = (unsigned int) _r1;	
-			if(old_cd_nelmts==0)
-				*new_cd_nelmts = 4;
-			else
-			{
-				(*new_cd_values)[4] = old_cd_values[0];
-				(*new_cd_values)[5] = old_cd_values[1];
-				(*new_cd_values)[6] = old_cd_values[2];
-				(*new_cd_values)[7] = old_cd_values[3];
-				(*new_cd_values)[8] = old_cd_values[4];
-				(*new_cd_values)[9] = old_cd_values[5];
-				(*new_cd_values)[10] = old_cd_values[6];
-				(*new_cd_values)[11] = old_cd_values[7];
-				(*new_cd_values)[12] = old_cd_values[8];
-				*new_cd_nelmts = 13;
-			}
-			break;
-		case 3:
-			(*new_cd_values)[2] = (unsigned int) _r3;
-			(*new_cd_values)[3] = (unsigned int) _r2;
-			(*new_cd_values)[4] = (unsigned int) _r1;	
-			if(old_cd_nelmts==0)
-				*new_cd_nelmts = 5;
-			else
-			{
-				(*new_cd_values)[5] = old_cd_values[0];
-				(*new_cd_values)[6] = old_cd_values[1];
-				(*new_cd_values)[7] = old_cd_values[2];
-				(*new_cd_values)[8] = old_cd_values[3];
-				(*new_cd_values)[9] = old_cd_values[4];
-				(*new_cd_values)[10] = old_cd_values[5];
-				(*new_cd_values)[11] = old_cd_values[6];
-				(*new_cd_values)[12] = old_cd_values[7];
-				(*new_cd_values)[13] = old_cd_values[8];
-				*new_cd_nelmts = 14;
-			}
-			break;
-		case 4:
-			(*new_cd_values)[2] = (unsigned int) _r4;	
-			(*new_cd_values)[3] = (unsigned int) _r3;
-			(*new_cd_values)[4] = (unsigned int) _r2;
-			(*new_cd_values)[5] = (unsigned int) _r1;	
-			if(old_cd_nelmts==0)
-				*new_cd_nelmts = 6;
-			else
-			{
-				(*new_cd_values)[6] = old_cd_values[0];
-				(*new_cd_values)[7] = old_cd_values[1];
-				(*new_cd_values)[8] = old_cd_values[2];
-				(*new_cd_values)[9] = old_cd_values[3];
-				(*new_cd_values)[10] = old_cd_values[4];
-				(*new_cd_values)[11] = old_cd_values[5];
-				(*new_cd_values)[12] = old_cd_values[6];
-				(*new_cd_values)[13] = old_cd_values[7];
-				(*new_cd_values)[14] = old_cd_values[8];
-				*new_cd_nelmts = 15;
-				break;
-			}
-		default:
-			(*new_cd_values)[2] = (unsigned int) _r5;		
-			(*new_cd_values)[3] = (unsigned int) _r4;	
-			(*new_cd_values)[4] = (unsigned int) _r3;
-			(*new_cd_values)[5] = (unsigned int) _r2;
-			(*new_cd_values)[6] = (unsigned int) _r1;
-			if(old_cd_nelmts==0)
-				*new_cd_nelmts = 7;
-			else
-			{
-				(*new_cd_values)[7] = old_cd_values[0];
-				(*new_cd_values)[8] = old_cd_values[1];
-				(*new_cd_values)[9] = old_cd_values[2];
-				(*new_cd_values)[10] = old_cd_values[3];
-				(*new_cd_values)[11] = old_cd_values[4];						
-				(*new_cd_values)[12] = old_cd_values[5];
-				(*new_cd_values)[13] = old_cd_values[6];
-				(*new_cd_values)[14] = old_cd_values[7];
-				(*new_cd_values)[15] = old_cd_values[8];
-				*new_cd_nelmts = 16;
-			}
-	}
+        //correct dimension if needed
+        size_t _r[5];
+        filterDimension(r5, r4, r3, r2, r1, _r);
+        size_t _r5 = _r[4];
+        size_t _r4 = _r[3];
+        size_t _r3 = _r[2];
+        size_t _r2 = _r[1];
+        size_t _r1 = _r[0];
+
+        int i =0;
+        int oldDim = computeDimension(r5, r4, r3, r2, r1);
+        int newDim = computeDimension(_r5, _r4, _r3, _r2, _r1);
+        (*new_cd_values)[0] = newDim;
+        (*new_cd_values)[1] = dataType;
+
+
+        switch(newDim)
+        {
+                case 1:
+                        longToBytes_bigEndian(bytes, (uint64_t) r1);
+                        (*new_cd_values)[2] = bytesToInt_bigEndian(bytes);
+                        (*new_cd_values)[3] = bytesToInt_bigEndian(&bytes[4]);
+                        if(old_cd_nelmts==0)
+                                *new_cd_nelmts = 4;
+                        else
+                        {
+                                (*new_cd_values)[4] = old_cd_values[0];
+                                (*new_cd_values)[5] = old_cd_values[1];
+                                (*new_cd_values)[6] = old_cd_values[2];
+                                (*new_cd_values)[7] = old_cd_values[3];
+                                (*new_cd_values)[8] = old_cd_values[4];
+                                (*new_cd_values)[9] = old_cd_values[5];
+                                (*new_cd_values)[10] = old_cd_values[6];
+                                (*new_cd_values)[11] = old_cd_values[7];
+                                (*new_cd_values)[12] = old_cd_values[8];
+                                *new_cd_nelmts = 13;
+                        }
+                        break;
+                case 2:
+                        (*new_cd_values)[2] = (unsigned int) _r2;
+                        (*new_cd_values)[3] = (unsigned int) _r1;
+                        if(old_cd_nelmts==0)
+                                *new_cd_nelmts = 4;
+                        else
+                        {
+                                (*new_cd_values)[4] = old_cd_values[0];
+                                (*new_cd_values)[5] = old_cd_values[1];
+                                (*new_cd_values)[6] = old_cd_values[2];
+                                (*new_cd_values)[7] = old_cd_values[3];
+                                (*new_cd_values)[8] = old_cd_values[4];
+                                (*new_cd_values)[9] = old_cd_values[5];
+                                (*new_cd_values)[10] = old_cd_values[6];
+                                (*new_cd_values)[11] = old_cd_values[7];
+                                (*new_cd_values)[12] = old_cd_values[8];
+                                *new_cd_nelmts = 13;
+                        }
+                        break;
+                case 3:
+                        (*new_cd_values)[2] = (unsigned int) _r3;
+                        (*new_cd_values)[3] = (unsigned int) _r2;
+                        (*new_cd_values)[4] = (unsigned int) _r1;
+                        if(old_cd_nelmts==0)
+                                *new_cd_nelmts = 5;
+                        else
+                        {
+                                (*new_cd_values)[5] = old_cd_values[0];
+                                (*new_cd_values)[6] = old_cd_values[1];
+                                (*new_cd_values)[7] = old_cd_values[2];
+                                (*new_cd_values)[8] = old_cd_values[3];
+                                (*new_cd_values)[9] = old_cd_values[4];
+                                (*new_cd_values)[10] = old_cd_values[5];
+                                (*new_cd_values)[11] = old_cd_values[6];
+                                (*new_cd_values)[12] = old_cd_values[7];
+                                (*new_cd_values)[13] = old_cd_values[8];
+                                *new_cd_nelmts = 14;
+                        }
+                        break;
+                case 4:
+                        (*new_cd_values)[2] = (unsigned int) _r4;
+                        (*new_cd_values)[3] = (unsigned int) _r3;
+                        (*new_cd_values)[4] = (unsigned int) _r2;
+                        (*new_cd_values)[5] = (unsigned int) _r1;
+                        if(old_cd_nelmts==0)
+                                *new_cd_nelmts = 6;
+                        else
+                        {
+                                (*new_cd_values)[6] = old_cd_values[0];
+                                (*new_cd_values)[7] = old_cd_values[1];
+                                (*new_cd_values)[8] = old_cd_values[2];
+                                (*new_cd_values)[9] = old_cd_values[3];
+                                (*new_cd_values)[10] = old_cd_values[4];
+                                (*new_cd_values)[11] = old_cd_values[5];
+                                (*new_cd_values)[12] = old_cd_values[6];
+                                (*new_cd_values)[13] = old_cd_values[7];
+                                (*new_cd_values)[14] = old_cd_values[8];
+                                *new_cd_nelmts = 15;
+                                break;
+                        }
+                default:
+                        (*new_cd_values)[2] = (unsigned int) _r5;
+                        (*new_cd_values)[3] = (unsigned int) _r4;
+                        (*new_cd_values)[4] = (unsigned int) _r3;
+                        (*new_cd_values)[5] = (unsigned int) _r2;
+                        (*new_cd_values)[6] = (unsigned int) _r1;
+                        if(old_cd_nelmts==0)
+                                *new_cd_nelmts = 7;
+                        else
+                        {
+                                (*new_cd_values)[7] = old_cd_values[0];
+                                (*new_cd_values)[8] = old_cd_values[1];
+                                (*new_cd_values)[9] = old_cd_values[2];
+                                (*new_cd_values)[10] = old_cd_values[3];
+                                (*new_cd_values)[11] = old_cd_values[4];
+                                (*new_cd_values)[12] = old_cd_values[5];
+                                (*new_cd_values)[13] = old_cd_values[6];
+                                (*new_cd_values)[14] = old_cd_values[7];
+                                (*new_cd_values)[15] = old_cd_values[8];
+                                *new_cd_nelmts = 16;
+                        }
+        }
  }
 
 
 void SZ_errConfigToCdArray(size_t* cd_nelmts, unsigned int **cd_values, int error_bound_mode, double abs_error, double rel_error, double l2normErrorBound, double psnr)
 {
-	*cd_values = (unsigned int*)malloc(sizeof(unsigned int)*9);
-	int k = 0;
-	(*cd_values)[k++] = error_bound_mode;
-	unsigned char b[8];
-	doubleToBytes(b, abs_error);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
-	doubleToBytes(b, rel_error);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b);	
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
-	doubleToBytes(b, l2normErrorBound);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b);		
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
-	doubleToBytes(b, psnr);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b);
-	(*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
-	*cd_nelmts = k;
+        *cd_values = (unsigned int*)malloc(sizeof(unsigned int)*9);
+        int k = 0;
+        (*cd_values)[k++] = error_bound_mode;
+        unsigned char b[8];
+        doubleToBytes(b, abs_error);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
+        doubleToBytes(b, rel_error);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
+        doubleToBytes(b, l2normErrorBound);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
+        doubleToBytes(b, psnr);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b);
+        (*cd_values)[k++] = bytesToInt32_bigEndian(b+4);
+        *cd_nelmts = k;
 }
 
 static herr_t H5Z_sz3_set_local(hid_t dcpl_id, hid_t type_id, hid_t chunk_space_id) {
 
-	//printf("get into H5Z_sz3_set_local\n");
+        //printf("get into H5Z_sz3_set_local\n");
     detectSysEndianType();
 
     // printf("start in H5Z_sz3_set_local, dcpl_id = %d\n", dcpl_id);
@@ -270,7 +266,7 @@ static herr_t H5Z_sz3_set_local(hid_t dcpl_id, hid_t type_id, hid_t chunk_space_
     //printf("DSIZE: %zu\n", dsize);
 
     //for(i = 0; i < ndims_used; i++){
-    //	printf("DIMS[%i] : %zu\n", i, dims_used[i]);
+    //  printf("DIMS[%i] : %zu\n", i, dims_used[i]);
     //}
     //printf("\nDCEQ\n");
 
@@ -322,19 +318,19 @@ static herr_t H5Z_sz3_set_local(hid_t dcpl_id, hid_t type_id, hid_t chunk_space_
     }
 
     unsigned int* cd_values = NULL;
-	if(mem_cd_nelmts!=0 && mem_cd_nelmts!=9)
-	{
-		H5Epush(H5E_DEFAULT,__FILE__, "H5Z_sz3_set_local", __LINE__, H5E_ERR_CLS, H5E_ARGS, H5E_BADVALUE, "Wrong number of cd_values: The new version has 9 integer elements in cd_values. Please check 'test/print_h5repack_args' to get the correct cd_values.");
-		H5Eprint(H5E_DEFAULT, stderr);
-		return -1;
-	}
+        if(mem_cd_nelmts!=0 && mem_cd_nelmts!=9)
+        {
+                H5Epush(H5E_DEFAULT,__FILE__, "H5Z_sz3_set_local", __LINE__, H5E_ERR_CLS, H5E_ARGS, H5E_BADVALUE, "Wrong number of cd_values: The new version has 9 integer elements in cd_values. Please check 'test/print_h5repack_args' to get the correct cd_values.");
+                H5Eprint(H5E_DEFAULT, stderr);
+                return -1;
+        }
     SZ_refreshDimForCdArray(dataType, mem_cd_nelmts, mem_cd_values, &cd_nelmts, &cd_values, dims_used[4], dims_used[3], dims_used[2], dims_used[1], dims_used[0]);
 
     // for (size_t i = 0; i < cd_nelmts; i++)
-	// {
-	// 	printf("cd_values=%u ", cd_values[i]);
-	// }
-	// printf("\n");
+        // {
+        //      printf("cd_values=%u ", cd_values[i]);
+        // }
+        // printf("\n");
 
     /* Now, update cd_values for the filter */
     if (0 > H5Pmodify_filter(dcpl_id, H5Z_FILTER_SZ3, flags, cd_nelmts, cd_values))
@@ -350,7 +346,7 @@ done:
 
 static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[], size_t nbytes, size_t* buf_size, void** buf)
 {
-	if(print) {printf("get into H5Z_filter_sz3\n"); print=0;}
+//      if(print) {printf("get into H5Z_filter_sz3\n"); print=0;}
     size_t r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0;
     int dimSize = 0, dataType = 0;
 
@@ -367,11 +363,11 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
     else
         SZ_cdArrayToMetaData(cd_nelmts, cd_values, &dimSize, &dataType, &r5, &r4, &r3, &r2, &r1);
 
-    std::cout << "IS of level " << (int)l2norm_error << " " << * buf_size << std::endl;
+    //std::cout << "IS of level " << (int)l2norm_error << " " << * buf_size << std::endl;
 
 
 
-	size_t nbEle = computeDataLength(r5,r4,r3,r2,r1);
+        size_t nbEle = computeDataLength(r5,r4,r3,r2,r1);
     if(nbEle < 20)
         return nbytes;
 
@@ -409,20 +405,14 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
                 long realLength;
         char meta_name[640];
         if (level == finest_level) {
-            sprintf(meta_name, "../meta/meta_%d.txt", level);
+            sprintf(meta_name, "../meta/meta_%d_%d.txt", level, cnt[level]/ncomp);
             FILE* file = fopen(meta_name, "r+");
             if (file == NULL) {
                 printf("Could not open meta file!\n");
+                printf("%s\n", meta_name);
                 return 1;
             }
-            int count = 0;
-            // printf("cnt: %d\n", cnt[level]);
-            while (fscanf(file, "%ld", &realLength) == 1) {
-                if (count == cnt[level]/ncomp) {
-                    break;
-                }
-                count++;
-            }
+            fscanf(file, "%ld", &realLength);
             fclose(file);
         } else {
             sprintf(meta_name, "../meta/meta_%d_%d.txt", level, cnt[level]/ncomp);
@@ -456,7 +446,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         SZ::Config conf;
 
         // std::cout << conf.dims[0] << " " << conf.dims[1] << conf.dims[2] << std::endl;
-        std::cout << realLength << std::endl;
+        //std::cout << realLength << std::endl;
 
         switch(dataType) {
         case SZ_FLOAT: //FLOAT
@@ -482,7 +472,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
             free(*buf);
             *buf = d_decompressedData;
             *buf_size = nbEle * sizeof(double);
-            cnt[level]++;	
+            cnt[level]++;
             break;
         }
 
@@ -578,40 +568,40 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
     else {
         // double sum=0;
         // for(int i=0;i<nbEle;i++)
-    	//     sum+=((double *)*buf)[i];
+        //     sum+=((double *)*buf)[i];
         // std::cout << "frist data in H5Z_filter_sz3: " << ((double *)*buf)[0] << std::endl;
         // std::cout << "sum of data in H5Z_filter_sz3: " << sum << std::endl;
 
         /*compress data*/
         size_t chunkSize = r1;
-		r1 = (int)psnr;
+                r1 = (int)psnr;
 
         /*bs*/
         // printf("szfliter comp using bs, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", r1, r2, r3, r4, r5);
-		
-		// /*1d*/
-		// printf("szfliter comp using 1d, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
 
-		/*nast*/
-		// r3 = r1/(BSIZE*BSIZE);
-		// r2 = BSIZE;
-		// r1 = BSIZE;
-        r2 = abs_error;
-        r3 = r1/(r2*r2);
-        r1 = r2;
-		printf("sz3Flite comp using nast, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
+                // /*1d*/
+                //printf("szfliter comp using 1d, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
 
-		/*stack*/
-		// size_t unitBlkSize = BSIZE*BSIZE*BSIZE;
+                /*nast*/
+                // r3 = r1/(BSIZE*BSIZE);
+                // r2 = BSIZE;
+                // r1 = BSIZE;
+       // r2 = abs_error;
+       // r3 = r1/(r2*r2);
+       // r1 = r2;
+        //      printf("sz3Flite comp using ori nast linear, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
+
+                /*stack*/
+                // size_t unitBlkSize = BSIZE*BSIZE*BSIZE;
         // size_t bigX = abs_error;
-		// size_t bigZ = r1/(bigX*bigX*unitBlkSize);
-		// r3 = BSIZE*bigZ;
-		// r2 = BSIZE*bigX;
-		// r1 = BSIZE*bigX;
-        // r2 = abs_error;
-        // r3 = r1/(r2*r2);
-        // r1 = r2;
-		// printf("szfliter comp using stack, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
+                // size_t bigZ = r1/(bigX*bigX*unitBlkSize);
+                // r3 = BSIZE*bigZ;
+                // r2 = BSIZE*bigX;
+                // r1 = BSIZE*bigX;
+         r2 = abs_error;
+         r3 = r1/(r2*r2);
+         r1 = r2;
+                 //printf("szfliter comp using stack, chunkSize=%u, r1=%u, r2=%u, r3=%u, r4=%u, r5=%u\n", chunkSize, r1, r2, r3, r4, r5);
 
         //based on # dimensions, get relevant dimensions and load config object with them
         if(dimSize <= 0) {
@@ -644,17 +634,17 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
 
         //if config file found and no user defined params, read the config file
         if(loadConfigFile && freshCdValues) {
-            	printf("Loading sz3.config ...\n");
+                printf("Loading sz3.config ...\n");
             conf.loadcfg(CONFIG_PATH);
         }
         else {
             conf.errorBoundMode = error_mode;
             conf.absErrorBound = abs_error;
             conf.relErrorBound = rel_error;
-            conf.l2normErrorBound = 0.01;
+            conf.l2normErrorBound = l2norm_error;
             conf.psnrErrorBound = psnr;
 
-            printf("PARAMS: mode|%i, abs_eb|%f, rel_eb|%f, l2_eb|%f, psnr_eb|%f\n", error_mode, abs_error, rel_error, l2norm_error, psnr);
+            //printf("PARAMS: mode|%i, abs_eb|%f, rel_eb|%f, l2_eb|%f, psnr_eb|%f\n", error_mode, abs_error, rel_error, l2norm_error, psnr);
 
             // if(cmp_algo < 0 || cmp_algo > 2) {
             //     printf("Invalid compression algo: %i, should be in [0,2]", cmp_algo);
@@ -668,18 +658,17 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
                 exit(0);
             }
 
-  
+
             conf.interpAlgo = interp_algo;
-            
-            conf.cmprAlgo = 0;
-            conf.lorenzo = true; // only use 1st order lorenzo
-            conf.lorenzo2 = false;
-            conf.regression = true;
-            conf.regression2 = false;
-            conf.blkSize = r2;
-            conf.totalLength = r2*r1*r3;
-            conf.blockSize = 6;
-	    std::cout << conf.blockSize << std::endl;
+
+            conf.cmprAlgo = 2;
+            //conf.lorenzo = true; // only use 1st order lorenzo
+            //conf.lorenzo2 = false;
+            //conf.regression = true;
+            //conf.regression2 = false;
+            // conf.blkSize = r2;
+            // conf.totalLength = r2*r1*r3;
+            // conf.blockSize = 4;
 
         }
 
@@ -689,7 +678,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         // throw std::runtime_error("intended failure.");
 
 //         struct adhoc {
-//             static char *SZ_compress_ours(const SZ::Config &conf, const double *data, size_t &outSize) { 
+//             static char *SZ_compress_ours(const SZ::Config &conf, const double *data, size_t &outSize) {
 //                 return SZ_compress(conf, data, outSize);
 //             }
 //         };
@@ -764,7 +753,7 @@ static size_t H5Z_filter_sz3(unsigned int flags, size_t cd_nelmts, const unsigne
         }
 
         // printf("\nOS: %u \n", outSize);
-        std::cout << "OS of level " << (int)l2norm_error << " " << outSize << std::endl;
+        //std::cout << "OS of level " << (int)l2norm_error << " " << outSize << std::endl;
         free(*buf);
         *buf = compressedData;
         *buf_size = outSize;
@@ -828,21 +817,21 @@ void SZ_cdArrayToMetaDataErr(size_t cd_nelmts, const unsigned int cd_values[], i
     //read in error bound value information
     int dim = *dimSize;
     int k = dim==1?4:dim+2;
-	unsigned char b[8];
-	int32ToBytes_bigEndian(b, cd_values[k++]);
-	*error_bound_mode = bytesToInt32_bigEndian(b);
-	int32ToBytes_bigEndian(b, cd_values[k++]);
-	int32ToBytes_bigEndian(b+4, cd_values[k++]);
-	*abs_error = bytesToDouble(b);
-	int32ToBytes_bigEndian(b, cd_values[k++]);
-	int32ToBytes_bigEndian(b+4, cd_values[k++]);
-	*rel_error = bytesToDouble(b);	
-	int32ToBytes_bigEndian(b, cd_values[k++]);
-	int32ToBytes_bigEndian(b+4, cd_values[k++]);
-	*l2norm_error = bytesToDouble(b);
-	int32ToBytes_bigEndian(b, cd_values[k++]);
-	int32ToBytes_bigEndian(b+4, cd_values[k++]);
-	*psnr = bytesToDouble(b);
+        unsigned char b[8];
+        int32ToBytes_bigEndian(b, cd_values[k++]);
+        *error_bound_mode = bytesToInt32_bigEndian(b);
+        int32ToBytes_bigEndian(b, cd_values[k++]);
+        int32ToBytes_bigEndian(b+4, cd_values[k++]);
+        *abs_error = bytesToDouble(b);
+        int32ToBytes_bigEndian(b, cd_values[k++]);
+        int32ToBytes_bigEndian(b+4, cd_values[k++]);
+        *rel_error = bytesToDouble(b);
+        int32ToBytes_bigEndian(b, cd_values[k++]);
+        int32ToBytes_bigEndian(b+4, cd_values[k++]);
+        *l2norm_error = bytesToDouble(b);
+        int32ToBytes_bigEndian(b, cd_values[k++]);
+        int32ToBytes_bigEndian(b+4, cd_values[k++]);
+        *psnr = bytesToDouble(b);
 }
 
 void SZ_copymetaDataToCdArray(size_t* cd_nelmts, unsigned int *cd_values, int dataType, size_t r5, size_t r4, size_t r3, size_t r2, size_t r1)
@@ -851,7 +840,7 @@ void SZ_copymetaDataToCdArray(size_t* cd_nelmts, unsigned int *cd_values, int da
     uint64_t size;
     int dim = computeDimension(r5, r4, r3, r2, r1);
     cd_values[0] = dim;
-    cd_values[1] = dataType;	//0: FLOAT ; 1: DOUBLE ; 2,3,4,....: INTEGER....
+    cd_values[1] = dataType;    //0: FLOAT ; 1: DOUBLE ; 2,3,4,....: INTEGER....
 
     switch(dim)
     {
@@ -1077,247 +1066,247 @@ inline void detectSysEndianType()
 
 inline void symTransform_8bytes(unsigned char data[8])
 {
-	unsigned char tmp = data[0];
-	data[0] = data[7];
-	data[7] = tmp;
+        unsigned char tmp = data[0];
+        data[0] = data[7];
+        data[7] = tmp;
 
-	tmp = data[1];
-	data[1] = data[6];
-	data[6] = tmp;
-	
-	tmp = data[2];
-	data[2] = data[5];
-	data[5] = tmp;
-	
-	tmp = data[3];
-	data[3] = data[4];
-	data[4] = tmp;
+        tmp = data[1];
+        data[1] = data[6];
+        data[6] = tmp;
+
+        tmp = data[2];
+        data[2] = data[5];
+        data[5] = tmp;
+
+        tmp = data[3];
+        data[3] = data[4];
+        data[4] = tmp;
 }
 
 //the byte to input is in the big-endian format
 inline double bytesToDouble(unsigned char* bytes)
 {
-	ldouble buf;
-	memcpy(buf.byte, bytes, 8);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
-		symTransform_8bytes(buf.byte);
-	return buf.value;
+        ldouble buf;
+        memcpy(buf.byte, bytes, 8);
+        if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+                symTransform_8bytes(buf.byte);
+        return buf.value;
 }
 
 inline void doubleToBytes(unsigned char *b, double num)
 {
-	ldouble buf;
-	buf.value = num;
-	memcpy(b, buf.byte, 8);
-	if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
-		symTransform_8bytes(b);
+        ldouble buf;
+        buf.value = num;
+        memcpy(b, buf.byte, 8);
+        if(sysEndianType==LITTLE_ENDIAN_SYSTEM)
+                symTransform_8bytes(b);
 }
 
 
 /**
- * @brief		check dimension and correct it if needed
- * @return 	0 (didn't change dimension)
- * 					1 (dimension is changed)
- * 					2 (dimension is problematic)
+ * @brief               check dimension and correct it if needed
+ * @return      0 (didn't change dimension)
+ *                                      1 (dimension is changed)
+ *                                      2 (dimension is problematic)
  **/
 int filterDimension(size_t r5, size_t r4, size_t r3, size_t r2, size_t r1, size_t* correctedDimension)
 {
-	int dimensionCorrected = 0;
-	int dim = computeDimension(r5, r4, r3, r2, r1);
-	correctedDimension[0] = r1;
-	correctedDimension[1] = r2;
-	correctedDimension[2] = r3;
-	correctedDimension[3] = r4;
-	correctedDimension[4] = r5;
-	size_t* c = correctedDimension;
-	if(dim==1)
-	{
-		if(r1<1)
-			return 2;
-	}
-	else if(dim==2)
-	{
-		if(r2==1)
-		{
-			c[1]= 0;
-			dimensionCorrected = 1;
-		}	
-		if(r1==1) //remove this dimension
-		{
-			c[0] = c[1]; 
-			c[1] = c[2];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==3)
-	{
-		if(r3==1)
-		{
-			c[2] = 0;
-			dimensionCorrected = 1;
-		}	
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==4)
-	{
-		if(r4==1)
-		{
-			c[3] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r3==1)
-		{
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			dimensionCorrected = 1;
-		}
-	}
-	else if(dim==5)
-	{
-		if(r5==1)
-		{
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r4==1)
-		{
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r3==1)
-		{
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r2==1)
-		{
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-		if(r1==1)
-		{
-			c[0] = c[1];
-			c[1] = c[2];
-			c[2] = c[3];
-			c[3] = c[4];
-			c[4] = 0;
-			dimensionCorrected = 1;
-		}
-	}
-	
-	return dimensionCorrected;
-	
+        int dimensionCorrected = 0;
+        int dim = computeDimension(r5, r4, r3, r2, r1);
+        correctedDimension[0] = r1;
+        correctedDimension[1] = r2;
+        correctedDimension[2] = r3;
+        correctedDimension[3] = r4;
+        correctedDimension[4] = r5;
+        size_t* c = correctedDimension;
+        if(dim==1)
+        {
+                if(r1<1)
+                        return 2;
+        }
+        else if(dim==2)
+        {
+                if(r2==1)
+                {
+                        c[1]= 0;
+                        dimensionCorrected = 1;
+                }
+                if(r1==1) //remove this dimension
+                {
+                        c[0] = c[1];
+                        c[1] = c[2];
+                        dimensionCorrected = 1;
+                }
+        }
+        else if(dim==3)
+        {
+                if(r3==1)
+                {
+                        c[2] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r2==1)
+                {
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        dimensionCorrected = 1;
+                }
+                if(r1==1)
+                {
+                        c[0] = c[1];
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        dimensionCorrected = 1;
+                }
+        }
+        else if(dim==4)
+        {
+                if(r4==1)
+                {
+                        c[3] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r3==1)
+                {
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        dimensionCorrected = 1;
+                }
+                if(r2==1)
+                {
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        dimensionCorrected = 1;
+                }
+                if(r1==1)
+                {
+                        c[0] = c[1];
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        dimensionCorrected = 1;
+                }
+        }
+        else if(dim==5)
+        {
+                if(r5==1)
+                {
+                        c[4] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r4==1)
+                {
+                        c[3] = c[4];
+                        c[4] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r3==1)
+                {
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        c[4] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r2==1)
+                {
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        c[4] = 0;
+                        dimensionCorrected = 1;
+                }
+                if(r1==1)
+                {
+                        c[0] = c[1];
+                        c[1] = c[2];
+                        c[2] = c[3];
+                        c[3] = c[4];
+                        c[4] = 0;
+                        dimensionCorrected = 1;
+                }
+        }
+
+        return dimensionCorrected;
+
 }
 
-inline void longToBytes_bigEndian(unsigned char *b, uint64_t num) 
+inline void longToBytes_bigEndian(unsigned char *b, uint64_t num)
 {
-	b[0] = (unsigned char)(num>>56);
-	b[1] = (unsigned char)(num>>48);
-	b[2] = (unsigned char)(num>>40);
-	b[3] = (unsigned char)(num>>32);
-	b[4] = (unsigned char)(num>>24);
-	b[5] = (unsigned char)(num>>16);
-	b[6] = (unsigned char)(num>>8);
-	b[7] = (unsigned char)(num);
-//	if(dataEndianType==LITTLE_ENDIAN_DATA)
-//		symTransform_8bytes(*b);
+        b[0] = (unsigned char)(num>>56);
+        b[1] = (unsigned char)(num>>48);
+        b[2] = (unsigned char)(num>>40);
+        b[3] = (unsigned char)(num>>32);
+        b[4] = (unsigned char)(num>>24);
+        b[5] = (unsigned char)(num>>16);
+        b[6] = (unsigned char)(num>>8);
+        b[7] = (unsigned char)(num);
+//      if(dataEndianType==LITTLE_ENDIAN_DATA)
+//              symTransform_8bytes(*b);
 }
 
 inline int bytesToInt_bigEndian(unsigned char* bytes)
 {
-	int temp = 0;
-	int res = 0;
-	
-	res <<= 8;
-	temp = bytes[0] & 0xff;
-	res |= temp;	
+        int temp = 0;
+        int res = 0;
 
-	res <<= 8;
-	temp = bytes[1] & 0xff;
-	res |= temp;
+        res <<= 8;
+        temp = bytes[0] & 0xff;
+        res |= temp;
 
-	res <<= 8;
-	temp = bytes[2] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = bytes[3] & 0xff;
-	res |= temp;
-	
-	return res;
+        res <<= 8;
+        temp = bytes[1] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = bytes[2] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = bytes[3] & 0xff;
+        res |= temp;
+
+        return res;
 }
 
 /**
  * @endianType: refers to the endian_type of unsigned char* b.
  * */
 inline int64_t bytesToLong_bigEndian(unsigned char* b) {
-	int64_t temp = 0;
-	int64_t res = 0;
+        int64_t temp = 0;
+        int64_t res = 0;
 
-	res <<= 8;
-	temp = b[0] & 0xff;
-	res |= temp;
+        res <<= 8;
+        temp = b[0] & 0xff;
+        res |= temp;
 
-	res <<= 8;
-	temp = b[1] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[2] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[3] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[4] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[5] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[6] & 0xff;
-	res |= temp;
-	
-	res <<= 8;
-	temp = b[7] & 0xff;
-	res |= temp;						
-	
-	return res;
+        res <<= 8;
+        temp = b[1] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[2] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[3] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[4] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[5] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[6] & 0xff;
+        res |= temp;
+
+        res <<= 8;
+        temp = b[7] & 0xff;
+        res |= temp;
+
+        return res;
 }
