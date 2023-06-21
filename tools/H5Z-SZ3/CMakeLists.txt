@@ -1,8 +1,8 @@
 #Either use:
 #find_package(HDF5 1.12.1 REQUIRED)
 #or manually set the hdf5 paths:
-set(HDF5_LIBRARIES "/opt/hdf5-1.12.2/install/lib/libhdf5.so")
-set(HDF5_INCLUDE_DIRS "/opt/hdf5-1.12.2/install/include")
+set(HDF5_LIBRARIES "$ENV{AMRIC_H5_HOME}/lib/libhdf5.so")
+set(HDF5_INCLUDE_DIRS "$ENV{AMRIC_H5_HOME}/include")
 
 # find_package(HDF5 REQUIRED)
 
