@@ -5,6 +5,6 @@ function(build_hdf5_test)
 endfunction(build_hdf5_test)
 
  #build_hdf5_test(src/sz3ToHDF5.cpp)
-#build_hdf5_test(src/dsz3FromHDF5.cpp)
+build_hdf5_test(des.cpp)
 # build_hdf5_test(src/convertBinToHDF5.cpp)
 
