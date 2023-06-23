@@ -15,7 +15,7 @@
 #define LEVEL 0
 #define XSIZE 128
 #define YSIZE 128
-#define ZSIZE 1024
+#define ZSIZE 128
 
 bool boxesInsec(int* box1, int* box2) {
         if (box1[3] < box2[0] || box2[3] < box1[0]) {
