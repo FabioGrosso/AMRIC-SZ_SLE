@@ -144,16 +144,21 @@ namespace SZ {
 
         //perform encoding
         size_t encode(const T *bins, size_t num_bin, uchar *&bytes) {
+            size_t mark[64];
+            size_t delta=0;
+            size_t m = 0;
             size_t outSize = 0;
             size_t i = 0;
             unsigned char bitSize = 0, byteSize, byteSizep;
             int state;
             uchar *p = bytes + sizeof(size_t);
             int lackBits = 0;
+            size_t totalBitSize = 0;
             //int64_t totalBitSize = 0, maxBitSize = 0, bitSize21 = 0, bitSize32 = 0;
             for (i = 0; i < num_bin; i++) {
                 state = bins[i] - offset;
                 bitSize = huffmanTree->cout[state];
+                totalBitSize += bitSize;
 
                 if (lackBits == 0) {
                     byteSize = bitSize % 8 == 0 ? bitSize / 8 : bitSize / 8 +
@@ -217,6 +222,34 @@ namespace SZ {
                             p++;
                     }
                 }
+                if (num_bin == 512*512*512){
+                    delta++;
+                }
+                if (delta == 512*512*512 / 32) {
+                    mark[m] = totalBitSize;
+                    m++;
+                    delta=0;
+                }
+
+                if (i == 512*512*512/4 * 1)
+                    std::cout << "25%:" << totalBitSize << std::endl;
+                if (i == 512*512*512/4 * 2)
+                    std::cout << "50%:" << totalBitSize << std::endl;
+                if (i == 512*512*512/4 * 3)
+                    std::cout << "75%:" << totalBitSize << std::endl;
+
+
+            }
+            if (num_bin == 512*512*512) {
+                std::ofstream outFile("mark.txt");
+                if (outFile.is_open()) {
+                    for (size_t i = 0; i < 32; ++i) {
+                        outFile << mark[i] << std::endl;
+                    }
+                    outFile.close();
+                } else {
+                    std::cerr << "Unable to open file for writing." << std::endl;
+                }
             }
             *reinterpret_cast<size_t *>(bytes) = outSize;
             bytes += sizeof(size_t) + outSize;
@@ -262,6 +295,64 @@ namespace SZ {
             bytes += encodedLength;
             return out;
         }
+
+
+
+        std::vector<T> decodepart(const unsigned char *&bytes, size_t targetLength) {
+            node t = treeRoot;
+            std::vector<T> out(targetLength); // Allocate space for the 4th quarter
+            size_t i = 0, byteIndex = 0, count = 0;
+            int r;
+            node n = treeRoot;
+            size_t encodedLength = *reinterpret_cast<const size_t *>(bytes);
+            bytes += sizeof(size_t);
+            // size_t skipLength = targetLength; // Length to skip the first three quarters
+
+            if (n->t) // root->t == 1 means that all state values are the same (constant)
+            {
+                for (count = 0; count < targetLength; count++)
+                    out[count] = n->c + offset;
+                return out;
+            }
+        
+
+            // Decode the 4th quarter
+
+
+            size_t smallZ;
+            std::ifstream boxFile("box.txt");
+            if (!boxFile) { std::cerr << "Unable to open boxFile\n";}
+            for (int i = 0; i < 3 && boxFile >> smallZ; ++i);
+            std::cout << "smallZ: " << smallZ << std::endl;
+
+            std::ifstream markFile("mark.txt");
+            if (!markFile) {std::cerr << "Unable to open markFile\n";}
+            for (int row = 0; row < smallZ && markFile >> i; ++row);
+            std::cout << "i is: " << i << std::endl;
+            
+
+            count = 0;
+            for (; count < targetLength; i++) {
+                byteIndex = i >> 3; // i / 8
+                r = i % 8;
+                if (((bytes[byteIndex] >> (7 - r)) & 0x01) == 0)
+                    n = n->left;
+                else
+                    n = n->right;
+
+                if (n->t) {
+                    out[count] = n->c + offset;
+                    n = t;
+                    count++;
+                }
+            }
+
+            bytes += encodedLength;
+            return out;
+        }
+
+
+
 
         //empty function
         void postprocess_decode() {

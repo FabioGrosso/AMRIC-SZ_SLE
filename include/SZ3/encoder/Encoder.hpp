@@ -19,6 +19,7 @@ namespace SZ {
             virtual void preprocess_decode() = 0;
 
             virtual std::vector<T> decode(const uchar *&bytes, size_t targetLength) = 0;
+            virtual std::vector<T> decodepart(const uchar *&bytes, size_t targetLength) = 0;
 
             virtual void postprocess_decode() = 0;
 

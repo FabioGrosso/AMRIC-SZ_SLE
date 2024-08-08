@@ -129,17 +129,7 @@ namespace SZ {
             return decompress(cmpData, cmpSize, dec_data);
         }
 
-
         T *decompress(uchar const *cmpData, const size_t &cmpSize, T *decData) {
-            size_t smallX, smallY, smallZ, bigX, bigY, bigZ;
-            std::ifstream inFile("box.txt");
-            if (inFile.is_open()) {
-                inFile >> smallX >> smallY >> smallZ;
-                inFile >> bigX >> bigY >> bigZ;
-                inFile.close();
-            } else {
-                std::cerr << "Unable to open file for box reading\n";
-            }
             size_t remaining_length = cmpSize;
             size_t init_length = cmpSize;
             size_t regCnt;
@@ -190,7 +180,7 @@ namespace SZ {
 
             // timer.start();
             auto startDequant= std::chrono::high_resolution_clock::now();
-            auto quant_inds = encoder.decodepart(compressed_data_pos, frontend.get_num_elements()/4);
+            auto quant_inds = encoder.decodepart(compressed_data_pos, frontend.get_num_elements()/64);
             // auto quant_inds = encoder.decode(compressed_data_pos, frontend.get_num_elements());
             encoder.postprocess_decode();
             // std::cout << "de quant size: " << quant_inds.size() << std::endl;
@@ -199,40 +189,45 @@ namespace SZ {
             std::cout << "Time taken by Decode is : "  << std::fixed << std::setprecision(5) << time_takenDequant << " sec" << std::endl;
             // timer.stop("Decoder");
 
+            count = 0;
+            // Print the length of quant_inds            // count = 0 + 32*32*16;
 
-            // Print the length of quant_inds
-            // std::cout << "Length of quant_inds 111: " << quant_inds.size() << std::endl;
-            count = 0 + 32*32*smallZ;
+            count = 0 + 8*8*8 * 63;
 
             auto *decDataPos = decData;
             size_t tempInd = 0;
             auto startDepre= std::chrono::high_resolution_clock::now();
-            for (size_t z = smallZ; z < bigZ; ++z) {
-                for (size_t y = smallY; y < bigY; ++y) {
-                    for (size_t x = smallX; x < bigX; ++x) {
-                        if (z >= 24) {
-            // for (size_t i = 0; i < blkNum/4; ++i) {
-                            if (regCntSum) {
-                                std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
-                                frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, sub_reg, 1);
-                            } else {
-                                frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, reg_vector, 1);
+            for (size_t k = 3; k < 4; ++k) {
+                for (size_t j = 3; j < 4; ++j) {
+                    for (size_t i = 3; i < 4; ++i) {
+                        for (size_t z = k * 8; z < k * 8 + 8; ++z) {
+                            for (size_t y = j * 8; y < j * 8 + 8; ++y) {
+                                for (size_t x = i * 8; x < i * 8 + 8; ++x) {
+                                    if (1) {
+                                        if (regCntSum) {
+                                            std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
+                                            frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, sub_reg, 1);
+                                        } else {
+                                            frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, reg_vector, 1);
+                                        }
+                                        std::vector<int> sub_quant {quant_inds.begin() + tempInd, quant_inds.begin() + tempInd + blkSize3D};
+                                        tempInd += blkSize3D;
+                                        // encoder.postprocess_decode();
+                                        frontend.decompress(sub_quant, decDataPos);
+                                        decDataPos += blkSize3D;
+                                        count++;
+                                    } else {
+                                        // if (regCntSum) {
+                                        //     std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
+                                        //     frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, sub_reg, 1);
+                                        // } else {
+                                        //     frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, reg_vector, 1);
+                                        // }
+                                        tempInd += blkSize3D;
+                                        count++;
+                                    }
+                                }
                             }
-                            std::vector<int> sub_quant {quant_inds.begin() + tempInd, quant_inds.begin() + tempInd + blkSize3D};
-                            tempInd += blkSize3D;
-                            // encoder.postprocess_decode();
-                            frontend.decompress(sub_quant, decDataPos);
-                            decDataPos += blkSize3D;
-                            count++;
-                        } else {
-                            // if (regCntSum) {
-                            //     std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};
-                            //     frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, sub_reg, 1);
-                            // } else {
-                            //     frontend.load(ptr[count], remainArr[count], blkSize, blkSize, blkSize, regCnt, reg_vector, 1);
-                            // }
-                            tempInd += blkSize3D;
-                            count++;
                         }
                     }
                 }
