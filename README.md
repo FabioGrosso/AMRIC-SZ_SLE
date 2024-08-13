@@ -4,14 +4,18 @@ install SZ first:
 * cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
 * make
 * make install
-Compile random access SZ
+
+Compile random access SZ:
 * cd ..
 * g++ api.cpp -o rdSz2 -I install/include -I install/include/SZ3/api/ -L install/lib64 -lzstd -O3
 
 ## Usage
 Adjust the data dimension in api.cpp (SIZE_X, SIZE_Y, SIZE_Z)
+
 Adjust the box dimension in api.cpp (smallX, smallY, smallZ, bigX, bigY, bigZ)
+
 Adjust the eb in api.cpp (errorBound)
+
 Adjust the input file name in api.cpp (inputFile)
 
 
