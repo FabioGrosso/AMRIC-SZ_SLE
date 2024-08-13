@@ -190,7 +190,7 @@ namespace SZ {
 
             // timer.start();
             auto startDequant= std::chrono::high_resolution_clock::now();
-            auto quant_inds = encoder.decodepart(compressed_data_pos, frontend.get_num_elements()/4);
+            auto quant_inds = encoder.decodepart(compressed_data_pos, frontend.get_num_elements() * ((double)(bigZ-smallZ)/32));
             // auto quant_inds = encoder.decode(compressed_data_pos, frontend.get_num_elements());
             encoder.postprocess_decode();
             // std::cout << "de quant size: " << quant_inds.size() << std::endl;
@@ -208,9 +208,9 @@ namespace SZ {
             size_t tempInd = 0;
             auto startDepre= std::chrono::high_resolution_clock::now();
             for (size_t z = smallZ; z < bigZ; ++z) {
-                for (size_t y = smallY; y < bigY; ++y) {
-                    for (size_t x = smallX; x < bigX; ++x) {
-                        if (z >= 24) {
+                for (size_t y = 0; y < bigY; ++y) {
+                    for (size_t x = 0; x < bigX; ++x) {
+                        if (y >= smallY && x>= smallX) {
             // for (size_t i = 0; i < blkNum/4; ++i) {
                             if (regCntSum) {
                                 std::vector<int> sub_reg {reg_vector.begin() + arrSum(regArr, count), reg_vector.begin() + arrSum(regArr, count + 1)};

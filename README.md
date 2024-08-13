@@ -1,4 +1,23 @@
-SZ3: A Modular Error-bounded Lossy Compression Framework for Scientific Datasets
+## Installation & Usage
+install SZ first:
+* mkdir build && cd build
+* cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
+* make
+* make install
+Compile random access SZ
+* cd ..
+* g++ api.cpp -o rdSz2 -I install/include -I install/include/SZ3/api/ -L install/lib64 -lzstd -O3
+
+## Usage
+Adjust the data dimension in api.cpp (SIZE_X, SIZE_Y, SIZE_Z)
+Adjust the box dimension in api.cpp (smallX, smallY, smallZ, bigX, bigY, bigZ)
+Adjust the eb in api.cpp (errorBound)
+Adjust the input file name in api.cpp (inputFile)
+
+
+
+
+<!-- SZ3: A Modular Error-bounded Lossy Compression Framework for Scientific Datasets
 =====
 (C) 2016 by Mathematics and Computer Science (MCS), Argonne National Laboratory. See COPYRIGHT in top-level directory.
 
@@ -86,4 +105,4 @@ Version New features
 * SZ 3.1.2 Support configuration file (INI format). Example can be found in 'test/sz3.config'.
 * SZ 3.1.3 Support more error control mode: PSNR, L2Norm, ABS_AND_REL, ABS_OR_REL. Support INT32 and INT64 datatype.
 * SZ 3.1.4 Support running on Windows. Please refer to https://github.com/szcompressor/SZ3/issues/5#issuecomment-1094039224 for instructions.
-* SZ 3.1.5 Support HDF5 by H5Z-SZ3. Please add "-DBUILD_H5Z_FILTER=ON" to enable this function for CMake.
+* SZ 3.1.5 Support HDF5 by H5Z-SZ3. Please add "-DBUILD_H5Z_FILTER=ON" to enable this function for CMake. -->
