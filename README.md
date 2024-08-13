@@ -1,4 +1,4 @@
-## Installation & Usage
+## Installation
 Install SZ first:
 * mkdir build && cd build
 * cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
