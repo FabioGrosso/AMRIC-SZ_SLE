@@ -1,5 +1,5 @@
 ## Installation & Usage
-install SZ first:
+Install SZ first:
 * mkdir build && cd build
 * cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
 * make
