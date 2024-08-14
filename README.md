@@ -10,11 +10,11 @@ Compile random access SZ:
 * g++ api.cpp -o rdSz2 -I install/include -I install/include/SZ3/api/ -L install/lib64 -lzstd -O3
 
 ## Usage
-Adjust the **data dimension** in api.cpp (SIZE_X, SIZE_Y, SIZE_Z)
+Adjust the **data dimension** in api.cpp if needed(SIZE_X, SIZE_Y, SIZE_Z)
 
-Adjust the **box dimension** in api.cpp (smallX, smallY, smallZ, bigX, bigY, bigZ)
+Adjust the **box size** in api.cpp if needed (smallX, smallY, smallZ, bigX, bigY, bigZ). From 0 to dimension/16 for each dimension (e.g., from 0 to 32 if dimension is 512).
 
-Adjust the **EB** in api.cpp (errorBound)
+Adjust the **EB** in api.cpp if needed (errorBound)
 
 Adjust the **input file** in api.cpp if needed(inputFile)
 
@@ -120,3 +120,4 @@ Version New features
 * SZ 3.1.3 Support more error control mode: PSNR, L2Norm, ABS_AND_REL, ABS_OR_REL. Support INT32 and INT64 datatype.
 * SZ 3.1.4 Support running on Windows. Please refer to https://github.com/szcompressor/SZ3/issues/5#issuecomment-1094039224 for instructions.
 * SZ 3.1.5 Support HDF5 by H5Z-SZ3. Please add "-DBUILD_H5Z_FILTER=ON" to enable this function for CMake. -->
+
