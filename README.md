@@ -18,6 +18,11 @@ Adjust the eb in api.cpp (errorBound)
 
 Adjust the input file name in api.cpp (inputFile)
 
+Run:
+* ./rdSz2
+
+
+
 
 
 
