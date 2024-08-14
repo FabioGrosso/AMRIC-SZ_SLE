@@ -22,7 +22,7 @@ const int SIZE_Z = 512;
 const int BLKSIZE = 16;
 const int TOTAL_SIZE = SIZE_X * SIZE_Y * SIZE_Z;
 
-const char* inputFile = "/vast/home/daoce/data/SDRBENCH-EXASKY-NYX-512x512x512/baryon_density.f32";
+const char* inputFile = "SDRBENCH-EXASKY-NYX-512x512x512/baryon_density.f32";
 
 using DataArray = float*;
 
