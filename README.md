@@ -1,11 +1,11 @@
 ## Installation
-# Install our SZ first:
+Install our SZ first:
 * mkdir build && cd build
 * cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
 * make
 * make install
 
-# Compile random access SZ:
+Compile random access SZ:
 * cd ..
 * g++ api.cpp -o rdSz2 -I install/include -I install/include/SZ3/api/ -L install/lib64 -lzstd -O3
 
@@ -18,11 +18,11 @@ Adjust the **EB** in api.cpp (errorBound)
 
 Adjust the **input file** in api.cpp if needed(inputFile)
 
-# Download & decompress the Nyx data
+Download & decompress the Nyx data
 * wget https://g-8d6b0.fd635.8443.data.globus.org/ds131.2/Data-Reduction-Repo/raw-data/EXASKY/NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
 * tar -xzvf NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
 
-# Run:
+Run:
 * ./rdSz2
 
 
