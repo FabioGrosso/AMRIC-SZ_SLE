@@ -20,7 +20,7 @@ Adjust the **input file** in api.cpp if needed(inputFile)
 
 Download & decompress the Nyx data
 * wget https://g-8d6b0.fd635.8443.data.globus.org/ds131.2/Data-Reduction-Repo/raw-data/EXASKY/NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
-* tar -xzvf NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
+* tar -xzvf SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
 
 Run:
 * ./rdSz2
