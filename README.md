@@ -1,5 +1,5 @@
 ## Installation
-Install SZ first:
+Install our SZ first:
 * mkdir build && cd build
 * cmake -DCMAKE_INSTALL_PREFIX:PATH=../install ..
 * make
@@ -16,10 +16,14 @@ Adjust the box dimension in api.cpp (smallX, smallY, smallZ, bigX, bigY, bigZ)
 
 Adjust the eb in api.cpp (errorBound)
 
-Adjust the input file name in api.cpp (inputFile)
+Adjust the input file name in api.cpp if needed(inputFile)
 
+download & decompress the Nyx data
+* wget https://g-8d6b0.fd635.8443.data.globus.org/ds131.2/Data-Reduction-Repo/raw-data/EXASKY/NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
+* tar -xzvf NYX/SDRBENCH-EXASKY-NYX-512x512x512.tar.gz
 Run:
 * ./rdSz2
+
 
 
 
